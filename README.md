@@ -172,11 +172,3 @@ docker compose -f docker-compose-balancify.yml down
 # Remove all images (optional)
 docker rmi $(docker images -q lb-*)
 ```
-
-## Next Steps
-
-1. **Test each load balancer individually** to understand their behavior
-2. **Compare performance metrics** between different implementations
-3. **Adjust thresholds** for Balancify load balancers based on your requirements
-4. **Scale up** by increasing server capacity or adding more servers
-5. **Customize traffic patterns** to simulate real-world scenarios
