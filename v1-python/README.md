@@ -1,6 +1,6 @@
-# Separate Docker Compose Files for Load Balancers
+# Balancify Python Edition (v1-python)
 
-This directory contains separate Docker Compose files for each load balancer implementation, making it easy to test them individually.
+This directory contains the Python implementation of the Balancify load balancing system. It includes separate Docker Compose files for each load balancer implementation, making it easy to test them individually.
 
 ## Available Load Balancers
 
@@ -80,7 +80,7 @@ docker logs client-balancify
 
 ## C++ Edition (DPDK + Intel CAT)
 
-The `cpp_balancify/` directory contains a full C++ rewrite of Balancify featuring a DPDK data plane and Intel CAT integration. Each component (load balancer, backend servers, monitors, and clients) is dockerized in `cpp_balancify/docker/docker-compose-balancify-cpp.yml`.
+For a high-performance C++ implementation with DPDK data plane and Intel CAT integration, see the [`../v2-cpp-optimized/`](../v2-cpp-optimized/) directory. The C++ version provides optimized packet processing and cache-aware connection tracking.
 
 ## Configuration Details
 

@@ -1,15 +1,28 @@
-# Balancify C++ Edition
+# Balancify C++ Edition (v2-cpp-optimized)
 
-This folder contains a C++ rewrite of the Balancify load balancer stack. The new implementation keeps the hybrid stateless/stateful routing logic, adds a DPDK-based data plane, and configures Intel Cache Allocation Technology (CAT) to pin the connection table inside the LLC.
+This directory contains a high-performance C++ rewrite of the Balancify load balancer stack. The implementation maintains the hybrid stateless/stateful routing logic from the Python version, adds a DPDK-based data plane for optimized packet processing, and configures Intel Cache Allocation Technology (CAT) to pin the connection table inside the Last Level Cache (LLC).
+
+## Directory Structure
+
+```
+v2-cpp-optimized/
+├── load_balancer/    # DPDK pipeline + control plane HTTP API
+├── server/           # Boost.Beast HTTP server
+├── monitor/          # Metrics collection agent
+├── client/           # Traffic generator
+├── common/           # Shared utilities (Bloom filter, Maglev, etc.)
+└── docker/           # Docker configurations
+```
 
 ## Components
 
 | Component | Description |
 |-----------|-------------|
-| `load_balancer/` | DPDK pipeline + control plane HTTP API (`/route`, `/update-server-metrics`, `/stats`). |
-| `server/` | Simple Boost.Beast HTTP server that exposes `/process` and `/metrics` endpoints. |
-| `monitor/` | Agent that periodically sends CPU/RAM metrics to the load balancer (`/update-server-metrics`). |
-| `client/` | Traffic generator that exercises the `/route` control-plane API. |
+| `load_balancer/` | DPDK pipeline + control plane HTTP API (`/route`, `/update-server-metrics`, `/stats`) |
+| `server/` | Boost.Beast HTTP server that exposes `/process` and `/metrics` endpoints |
+| `monitor/` | Agent that periodically sends CPU/RAM metrics to the load balancer |
+| `client/` | Traffic generator that exercises the `/route` control-plane API |
+| `common/` | Shared utilities including Bloom filter and Maglev hashing |
 
 ## Build
 
@@ -22,7 +35,7 @@ The project uses CMake and depends on:
 - `libboost-all-dev`
 
 ```bash
-cd cpp_balancify
+cd v2-cpp-optimized
 cmake -S . -B build -GNinja
 cmake --build build
 ```
