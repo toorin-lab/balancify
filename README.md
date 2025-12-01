@@ -1,11 +1,11 @@
 # Balancify
 
-A hybrid load balancing system that intelligently switches between stateless and stateful routing based on server load conditions.
+A hybrid layer-4 load balaner that intelligently switches between stateful and stateless routing based on server load conditions.
 
 ## Overview
 
 Balancify implements a novel hybrid load balancing approach that:
-- Uses **stateless routing** (Maglev consistent hashing) when servers are under low load
+- Uses **stateless routing** (consistent hashing) when servers are under low load
 - Automatically switches to **stateful routing** (connection tracking) when servers exceed CPU/RAM thresholds
 - Provides optimal load distribution while minimizing memory overhead
 
