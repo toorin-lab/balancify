@@ -1,0 +1,157 @@
+version: '3.8'
+
+services:
+  # Original Balancify Load Balancer
+  load-balancer-balancify:
+    build:
+      context: .
+      dockerfile: Dockerfile.lb-balancify
+    container_name: load-balancer-balancify
+    ports:
+      - "8082:8080"
+    environment:
+      - SERVER_COUNT=3
+      - SERVER_1_HOST=server-1
+      - SERVER_1_PORT=5000
+      - SERVER_1_CAPACITY=30
+      - SERVER_2_HOST=server-2
+      - SERVER_2_PORT=5000
+      - SERVER_2_CAPACITY=30
+      - SERVER_3_HOST=server-3
+      - SERVER_3_PORT=5000
+      - SERVER_3_CAPACITY=30
+      - CPU_THRESHOLD=20.0
+      - RAM_THRESHOLD=2.0
+      - MAX_STATEFUL_ENTRIES=1000
+      - MONITORING_INTERVAL=10
+      - LB_PORT=8080
+      - DEBUG=False
+    networks:
+      - lb-network
+    depends_on:
+      - server-1
+      - server-2
+      - server-3
+    restart: unless-stopped
+
+  # Server 1
+  server-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: server-1-balancify
+    environment:
+      - SERVER_NAME=server-1
+      - SERVER_PORT=5000
+      - DEBUG=False
+    networks:
+      - lb-network
+    restart: unless-stopped
+
+  # Server 2
+  server-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: server-2-balancify
+    environment:
+      - SERVER_NAME=server-2
+      - SERVER_PORT=5000
+      - DEBUG=False
+    networks:
+      - lb-network
+    restart: unless-stopped
+
+  # Server 3
+  server-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: server-3-balancify
+    environment:
+      - SERVER_NAME=server-3
+      - SERVER_PORT=5000
+      - DEBUG=False
+    networks:
+      - lb-network
+    restart: unless-stopped
+
+  # Server Monitor 1
+  server-monitor-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitor
+    container_name: server-monitor-1-balancify
+    environment:
+      - SERVER_NAME=server-1
+      - SERVER_HOST=server-1
+      - SERVER_PORT=5000
+      - LOAD_BALANCER_URL=http://load-balancer-balancify:8080
+      - MONITORING_INTERVAL=5
+    depends_on:
+      - server-1
+      - load-balancer-balancify
+    networks:
+      - lb-network
+    restart: unless-stopped
+
+  # Server Monitor 2
+  server-monitor-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitor
+    container_name: server-monitor-2-balancify
+    environment:
+      - SERVER_NAME=server-2
+      - SERVER_HOST=server-2
+      - SERVER_PORT=5000
+      - LOAD_BALANCER_URL=http://load-balancer-balancify:8080
+      - MONITORING_INTERVAL=5
+    depends_on:
+      - server-2
+      - load-balancer-balancify
+    networks:
+      - lb-network
+    restart: unless-stopped
+
+  # Server Monitor 3
+  server-monitor-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitor
+    container_name: server-monitor-3-balancify
+    environment:
+      - SERVER_NAME=server-3
+      - SERVER_HOST=server-3
+      - SERVER_PORT=5000
+      - LOAD_BALANCER_URL=http://load-balancer-balancify:8080
+      - MONITORING_INTERVAL=5
+    depends_on:
+      - server-3
+      - load-balancer-balancify
+    networks:
+      - lb-network
+    restart: unless-stopped
+
+  # Client
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: client-balancify
+    environment:
+      - LOAD_BALANCER_URL=http://load-balancer-balancify:8080
+      - TEST_DURATION=300
+      - TRAFFIC_PATTERN=burst
+      - REQUEST_INTERVAL=0.5
+      - BURST_SIZE=30
+      - QUIET_PERIOD=2.0
+    depends_on:
+      - load-balancer-balancify
+    networks:
+      - lb-network
+    restart: unless-stopped
+
+networks:
+  lb-network:
+    driver: bridge

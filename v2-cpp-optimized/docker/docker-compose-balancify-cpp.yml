@@ -1,0 +1,111 @@
+version: "3.9"
+
+services:
+  load-balancer-cpp:
+    build:
+      context: ../..
+      dockerfile: cpp_balancify/docker/Dockerfile.lb
+    container_name: load-balancer-cpp
+    environment:
+      - SERVER_COUNT=3
+      - SERVER_0_NAME=server-1
+      - SERVER_1_NAME=server-2
+      - SERVER_2_NAME=server-3
+      - CPU_THRESHOLD=20.0
+      - RAM_THRESHOLD=2.0
+      - MAX_STATEFUL_ENTRIES=1000
+      - BLOOM_THRESHOLD=500
+      - MONITORING_INTERVAL=10
+    ports:
+      - "9090:8080"
+    networks:
+      - cpp-net
+    depends_on:
+      - server-1
+      - server-2
+      - server-3
+
+  server-1:
+    build:
+      context: ../..
+      dockerfile: cpp_balancify/docker/Dockerfile.server
+    environment:
+      - SERVER_NAME=server-1
+      - SERVER_PORT=5000
+    networks:
+      - cpp-net
+
+  server-2:
+    build:
+      context: ../..
+      dockerfile: cpp_balancify/docker/Dockerfile.server
+    environment:
+      - SERVER_NAME=server-2
+      - SERVER_PORT=5001
+    networks:
+      - cpp-net
+
+  server-3:
+    build:
+      context: ../..
+      dockerfile: cpp_balancify/docker/Dockerfile.server
+    environment:
+      - SERVER_NAME=server-3
+      - SERVER_PORT=5002
+    networks:
+      - cpp-net
+
+  monitor-1:
+    build:
+      context: ../..
+      dockerfile: cpp_balancify/docker/Dockerfile.monitor
+    environment:
+      - SERVER_NAME=server-1
+      - LOAD_BALANCER_URL=http://load-balancer-cpp:8080
+      - MONITORING_INTERVAL=5
+    depends_on:
+      - server-1
+    networks:
+      - cpp-net
+
+  monitor-2:
+    build:
+      context: ../..
+      dockerfile: cpp_balancify/docker/Dockerfile.monitor
+    environment:
+      - SERVER_NAME=server-2
+      - LOAD_BALANCER_URL=http://load-balancer-cpp:8080
+      - MONITORING_INTERVAL=5
+    depends_on:
+      - server-2
+    networks:
+      - cpp-net
+
+  monitor-3:
+    build:
+      context: ../..
+      dockerfile: cpp_balancify/docker/Dockerfile.monitor
+    environment:
+      - SERVER_NAME=server-3
+      - LOAD_BALANCER_URL=http://load-balancer-cpp:8080
+      - MONITORING_INTERVAL=5
+    depends_on:
+      - server-3
+    networks:
+      - cpp-net
+
+  client:
+    build:
+      context: ../..
+      dockerfile: cpp_balancify/docker/Dockerfile.client
+    environment:
+      - LOAD_BALANCER_URL=http://load-balancer-cpp:8080
+    depends_on:
+      - load-balancer-cpp
+    networks:
+      - cpp-net
+
+networks:
+  cpp-net:
+    driver: bridge
+

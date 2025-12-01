@@ -1,0 +1,24 @@
+FROM ubuntu:24.04 AS build
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential cmake ninja-build libboost-all-dev libssl-dev pkg-config && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY .. /src
+RUN cmake -S cpp_balancify -B build -GNinja \
+        -DBUILD_LOAD_BALANCER=OFF \
+        -DBUILD_CPP_SERVER=ON \
+        -DBUILD_CPP_MONITOR=OFF \
+        -DBUILD_CPP_CLIENT=OFF && \
+    cmake --build build --target balancify_server
+
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y libboost-all-dev libssl3 && rm -rf /var/lib/apt/lists/*
+COPY --from=build /src/build/server/balancify_server /usr/local/bin/balancify_server
+
+ENV SERVER_NAME=server-1 \
+    SERVER_PORT=5000
+
+ENTRYPOINT ["/usr/local/bin/balancify_server"]
+
