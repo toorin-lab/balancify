@@ -3,7 +3,7 @@
 This repository contains the implementation of Balancify, for the paper:
 
 > **Toward Efficient Layer-4 Load Balancing: A Hybrid Stateful–Stateless Approach**  
-> *Amirhossein Sadr Kowsar Pakzad, Mohammad Hosseini, Hannaneh B. Pasandi, Sina Darabi*  
+> *Amirhossein Sadr, Kowsar Pakzad, Mohammad Hosseini, Hannaneh B. Pasandi, and Sina Darabi*  
 > ACM 21st International Conference on Emerging Networking Experiments and Technologies (CoNEXT) Student Workshop, Hong Kong, 2025. — **🏆 Recipient of Best Paper Award and Best Contribution Award**
 
 Balancify is a hybrid of stateless and stateful load balancing approaches, providing the benefits of both: high throughput, low latency, and balanced load distribution across servers.
@@ -71,4 +71,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Copyright
 
 Copyright (c) 2025 Toorin
+
+## Cite
+
+If you use this code in your research, please cite the following paper:
+
+```bibtex
+@inproceedings{sadr2025toward,
+  title={Toward Efficient Layer-4 Load Balancing: A Hybrid Stateful{\^a}€“Stateless Approach},
+  author={Sadr, Amirhossein and Pakzad, Kowsar and Hosseini, Mohammad and Pasandi, Hannaneh B and Darabi, Sina},
+  booktitle={Proceedings of the CoNEXT'25 Student workshop},
+  pages={5--6},
+  year={2025}
+}
 
