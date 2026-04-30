@@ -1,13 +1,19 @@
 # Balancify
 
-A hybrid layer-4 load balaner that intelligently switches between stateful and stateless routing based on server load conditions.
+This repository contains the implementation of Balancify, for the paper:
+
+> **Toward Efficient Layer-4 Load Balancing: A Hybrid Stateful–Stateless Approach**  
+> *Amirhossein Sadr Kowsar Pakzad, Mohammad Hosseini, Hannaneh B. Pasandi, Sina Darabi*  
+> ACM 21st International Conference on Emerging Networking Experiments and Technologies (CoNEXT) Student Workshop, Hong Kong, 2025. — **🏆 Recipient of Best Paper Award and Best Contribution Award**
+
+Balancify is a hybrid of stateless and stateful load balancing approaches, providing the benefits of both: high throughput, low latency, and balanced load distribution across servers.
 
 ## Overview
 
-Balancify implements a novel hybrid load balancing approach that:
-- Uses **stateless routing** (consistent hashing) when servers are under low load
-- Automatically switches to **stateful routing** (connection tracking) when servers exceed CPU/RAM thresholds
-- Provides optimal load distribution while minimizing memory overhead
+At a high level, Balancify operates as follows:
+- For a new request, Balancify first applies consistent hashing; if the selected server is significantly more loaded than others, it discards that result and picks the least-loaded server instead.
+- When the least-loaded server is chosen (bypassing the hash function), that assignment is recorded in a connection-to-server table for the request.
+- Packet forwarding always checks the stateful table first; if no matching entry is found, it falls back to the hash-based forwarding method.
 
 ## Repository Structure
 
