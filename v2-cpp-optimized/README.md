@@ -51,4 +51,3 @@ docker compose -f docker/docker-compose-balancify-cpp.yml up --build
 ```
 
 > ⚠️ DPDK requires elevated privileges and access to hugepages. The load balancer container uses `cap_add` with `NET_ADMIN`/`IPC_LOCK` and expects hugepages to be available on the host.
-
