@@ -98,7 +98,7 @@ If you use this code in your research, please cite the following paper:
 
 ```bibtex
 @inproceedings{sadr2025toward,
-  title={Toward Efficient Layer-4 Load Balancing: A Hybrid Stateful{\^a}€“Stateless Approach},
+  title={Toward Efficient Layer-4 Load Balancing: A Hybrid Stateful--Stateless Approach},
   author={Sadr, Amirhossein and Pakzad, Kowsar and Hosseini, Mohammad and Pasandi, Hannaneh B and Darabi, Sina},
   booktitle={Proceedings of the CoNEXT'25 Student workshop},
   pages={5--6},
