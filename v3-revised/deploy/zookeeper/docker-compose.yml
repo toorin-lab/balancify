@@ -1,0 +1,46 @@
+# Three-node ZooKeeper ensemble for sharing overrides among load-balancer
+# instances. Run one service per coordination host in production; this file
+# starts all three on one host for a lab setup.
+#
+#   docker compose -f deploy/zookeeper/docker-compose.yml up -d
+#   zk_hosts = <host>:2181,<host>:2182,<host>:2183
+
+services:
+  zk1:
+    image: zookeeper:3.8.4
+    restart: unless-stopped
+    hostname: zk1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zk1:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+      ZOO_TICK_TIME: 1000
+      ZOO_MAX_CLIENT_CNXNS: 0
+      JVMFLAGS: "-Djute.maxbuffer=4194304"
+
+  zk2:
+    image: zookeeper:3.8.4
+    restart: unless-stopped
+    hostname: zk2
+    ports:
+      - "2182:2181"
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zk1:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+      ZOO_TICK_TIME: 1000
+      ZOO_MAX_CLIENT_CNXNS: 0
+      JVMFLAGS: "-Djute.maxbuffer=4194304"
+
+  zk3:
+    image: zookeeper:3.8.4
+    restart: unless-stopped
+    hostname: zk3
+    ports:
+      - "2183:2181"
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zk1:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+      ZOO_TICK_TIME: 1000
+      ZOO_MAX_CLIENT_CNXNS: 0
+      JVMFLAGS: "-Djute.maxbuffer=4194304"

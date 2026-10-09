@@ -21,6 +21,7 @@ At a high level, Balancify operates as follows:
 balancify/
 ├── v1-python/          # Python implementation with Flask-based load balancers
 ├── v2-cpp-optimized/   # C++ implementation with DPDK data plane and Intel CAT
+├── v3-revised/         # Revised design: stable hashing, ZooKeeper-shared overrides, per-core tables
 ├── simulation/         # Simulation scripts for testing and analysis
 └── LICENSE            # MIT License
 ```
@@ -44,6 +45,16 @@ High-performance C++ implementation featuring:
 - Optimized connection tracking
 
 See [v2-cpp-optimized/README.md](v2-cpp-optimized/README.md) for detailed documentation.
+
+### v3-revised
+Implementation of the revised design:
+- Threshold-gated overrides on top of stable hashing (Algorithm 2), with R0/R1/R2 target rules
+- Per-core connection-to-DIP tables with fingerprints, incremental resizing and a counting Bloom filter
+- Overrides and the bucket table shared among instances through ZooKeeper; DIP and LB churn handling
+- CPU or latency load signal, run-time tunable threshold and sampling interval
+- `balancify`, `all_stateful` and `stateless` modes in one binary for baseline comparisons
+
+See [v3-revised/README.md](v3-revised/README.md) for detailed documentation.
 
 ### simulation
 Simulation scripts for testing and analyzing load balancing algorithms.
