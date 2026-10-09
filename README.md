@@ -47,12 +47,16 @@ High-performance C++ implementation featuring:
 See [v2-cpp-optimized/README.md](v2-cpp-optimized/README.md) for detailed documentation.
 
 ### v3-revised
-Implementation of the revised design:
-- Threshold-gated overrides on top of stable hashing (Algorithm 2), with R0/R1/R2 target rules
-- Per-core connection-to-DIP tables with fingerprints, incremental resizing and a counting Bloom filter
-- Overrides and the bucket table shared among instances through ZooKeeper; DIP and LB churn handling
-- CPU or latency load signal, run-time tunable threshold and sampling interval
-- `balancify`, `all_stateful` and `stateless` modes in one binary for baseline comparisons
+DPDK implementation of the revised Balancify design. Every connection is forwarded by consistent hashing unless its hash-selected server exceeds the pool's average load by more than a threshold `T`; only such overridden connections are placed on the least-loaded server and recorded in the connection-to-server table, so the table size follows the workload's request heterogeneity rather than the number of active connections.
+
+New in v3:
+- **Override rule:** exact threshold gate (Algorithm 2) on top of Stable hashing (Maglev selectable), with three target rules: argmin, argmin with per-connection load increment, and random below-average server
+- **Fast path:** RSS-based multi-core data plane with per-core tables (cache-line buckets, 16-bit fingerprints, incremental resizing) and IP-in-IP encapsulation with direct server return
+- **Bloom filter:** cache-blocked counting filter with saturating counters, enabled automatically when the table outgrows its LLC partition (Intel CAT)
+- **Multiple LB instances:** overrides and the bucket table are shared through ZooKeeper; overrides are written before the first packet is forwarded, and a new instance synchronizes before it is announced to ECMP
+- **Churn handling:** a failed or drained server leaves the pool and its entries are purged; adding a server never touches the table
+- **Load signal and tuning:** CPU utilization or request latency reported by a per-server agent; threshold, sampling interval and target rule adjustable at run time through an HTTP control API
+- **Evaluation support:** `balancify`, `all_stateful` and `stateless` modes in one binary, statistics logging, TRex profiles, a testbed backend and workload generator, and scripts for dependencies, build, setup, parameter sweeps and hardware counters
 
 See [v3-revised/README.md](v3-revised/README.md) for detailed documentation.
 
@@ -73,6 +77,15 @@ docker compose -f docker-compose-balancify.yml up -d
 ```bash
 cd v2-cpp-optimized
 docker compose -f docker/docker-compose-balancify-cpp.yml up --build
+```
+
+### Revised Version (v3-revised)
+
+```bash
+cd v3-revised
+sudo ./scripts/install_deps.sh
+./scripts/build.sh
+sudo ./scripts/run_lb.sh <pci-address> 0-2 config/balancify.conf.example
 ```
 
 ## License
